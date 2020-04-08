@@ -1,5 +1,6 @@
 package com.myappcompany.russell.snapchat
 
+import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
@@ -24,7 +25,8 @@ class SnapsActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem?): Boolean {
         if(item?.itemId == R.id.createSnap){
-
+            val intent = Intent(this, CreateSnapActivity::class.java)
+            startActivity(intent)
         }else if(item?.itemId == R.id.logout){
             mAuth.signOut()
             finish()
