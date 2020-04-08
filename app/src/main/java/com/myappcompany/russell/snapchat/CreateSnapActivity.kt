@@ -10,11 +10,24 @@ import android.provider.MediaStore
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import com.google.firebase.storage.UploadTask
+import com.google.android.gms.tasks.OnSuccessListener
+import android.support.annotation.NonNull
+import com.google.android.gms.tasks.OnFailureListener
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
+import android.util.Log
+import android.widget.Toast
+import com.google.firebase.storage.FirebaseStorage
+import java.io.ByteArrayOutputStream
+import java.util.*
+
 
 class CreateSnapActivity : AppCompatActivity() {
 
     var createSnapImageView: ImageView? = null
     var messageEditText: EditText? = null
+    val imageName = UUID.randomUUID().toString() + ".jpg"
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -66,7 +79,23 @@ class CreateSnapActivity : AppCompatActivity() {
     }
 
     fun nextClicked(view: View){
+// Get the data from an ImageView as bytes
+        createSnapImageView?.setDrawingCacheEnabled(true)
+        createSnapImageView?.buildDrawingCache()
+        val bitmap = (createSnapImageView?.getDrawable() as BitmapDrawable).bitmap
+        val baos = ByteArrayOutputStream()
+        bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+        val data = baos.toByteArray()
 
+        val uploadTask = FirebaseStorage.getInstance().getReference().child("images").child(imageName).putBytes(data)
+        uploadTask.addOnFailureListener(OnFailureListener {
+            // Handle unsuccessful uploads
+            Toast.makeText(this,"Upload Failed", Toast.LENGTH_SHORT).show()
+        }).addOnSuccessListener(OnSuccessListener<UploadTask.TaskSnapshot> { taskSnapshot ->
+            // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
+            val downloadUrl = taskSnapshot.downloadUrl
+            Log.i("URL", downloadUrl.toString())
+        })
     }
 
 
