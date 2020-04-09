@@ -82,7 +82,7 @@ class CreateSnapActivity : AppCompatActivity() {
 // Get the data from an ImageView as bytes
         createSnapImageView?.setDrawingCacheEnabled(true)
         createSnapImageView?.buildDrawingCache()
-        val bitmap = (createSnapImageView?.getDrawable() as BitmapDrawable).bitmap
+        val bitmap = createSnapImageView?.getDrawingCache()
         val baos = ByteArrayOutputStream()
         bitmap?.compress(Bitmap.CompressFormat.JPEG, 100, baos)
         val data = baos.toByteArray()
@@ -95,6 +95,12 @@ class CreateSnapActivity : AppCompatActivity() {
             // taskSnapshot.getMetadata() contains file metadata such as size, content-type, etc.
             val downloadUrl = taskSnapshot.downloadUrl
             Log.i("URL", downloadUrl.toString())
+
+            val intent = Intent(this, ChooseUserActivity::class.java)
+            intent.putExtra("imageURL", downloadUrl.toString())
+            intent.putExtra("imageName", imageName)
+            intent.putExtra("message", messageEditText?.text.toString())
+            startActivity(intent)
         })
     }
 
